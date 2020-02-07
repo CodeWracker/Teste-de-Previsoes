@@ -3,15 +3,21 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+def funcaoAtivacao(valor):
+    if(valor>0):
+        return 1
+    else: 
+        return (-1)
+
 # Numero de epocas e de padrões (q)
-numEpocas = 10000
+numEpocas = 100
 q = 13
 
 # Taxa de Aprendizado
-eta = 0.0001
+eta = 0.01
 
 m = 2   # Numero de Neeuronios na camada de entrada
-N = 4   # Numero de Neeuronios na camada escondida
+N = 1   # Numero de Neeuronios na camada escondida
 L = 1   # Numero de Neeuronios na camada de saida
 
 # Carrega os dados de treinamento
@@ -75,32 +81,41 @@ for i in range(numEpocas):
 
     Etm[i] = E.mean()
 
-print("Erro total medio = " + str(Etm))
+#print("Erro total medio = " + str(Etm))
 print("----------------")
 plt.plot(Etm)
 plt.show()
 
 '''
-================================================
-                Teste da rede
-================================================
+=======================================
+            TESTE DA REDE
+=======================================
 '''
-Error_Test = np.zeros(q)
-for j in range(q):
 
-    # insere o bias no vetor de entrada
-    Xb = np.hstack((bias, X[:,j]))
+# Carrega os dados de treinamento
+peso = np.array([110, 113, 120,  125, 97])
+pH   = np.array([6.0, 4.4, 3.5, 5.5, 5.0])
 
-    # Saida da camada Escondida
-    O1 = np.tanh(W1.dot(Xb))
+# Vetor de classificação desejada.
+d = np.array([-1, -1, 1, 1, 1])
+Error_Test = np.zeros(5)
 
-    # Incluindo o bias
+for i in range(5):
+    # Insere o bias no vetor de entrada.
+    Xb = np.hstack((bias, X[:,i]))
+
+    # Saída da Camada Escondida.
+    O1 = np.tanh(W1.dot(Xb))               
+
+    # Incluindo o bias.
     O1b = np.insert(O1, 0, bias)
 
-    # Saida da rede neural
-    Y = np.tanh(W2.dot(O1b))
-    e = d[j] - Y
-    Error_Test[j] = (e.transpose().dot(e))/2
+    # Saida
+    Y = np.tanh(W2.dot(O1b))      #tanh é a sigmoid       
 
-print(Error_Test)
+    Error_Test[i] = d[i] - Y
+    
+print(np.round(Error_Test))
 print(np.round(Error_Test) - d)
+
+
