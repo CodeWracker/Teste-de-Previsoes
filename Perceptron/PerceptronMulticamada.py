@@ -93,29 +93,25 @@ plt.show()
 '''
 
 # Carrega os dados de treinamento
-peso = np.array([110, 113, 120,  125, 97])
-pH   = np.array([6.0, 4.4, 3.5, 5.5, 5.0])
+peso = input("peso ")
+pH   = input("ph ")
 
 # Vetor de classificação desejada.
 d = np.array([-1, -1, 1, 1, 1])
 Error_Test = np.zeros(5)
 
-for i in range(5):
-    # Insere o bias no vetor de entrada.
-    Xb = np.hstack((bias, X[:,i]))
 
-    # Saída da Camada Escondida.
-    O1 = np.tanh(W1.dot(Xb))               
+# Insere o bias no vetor de entrada.
+Xb = [peso,pH,bias]
 
-    # Incluindo o bias.
-    O1b = np.insert(O1, 0, bias)
+# Saída da Camada Escondida.
+O1 = W1.dot(Xb)              
 
-    # Saida
-    Y = np.tanh(W2.dot(O1b))      #tanh é a sigmoid       
+# Incluindo o bias.
+O1b = np.insert(O1, 0, bias)
 
-    Error_Test[i] = d[i] - Y
-    
-print(np.round(Error_Test))
-print(np.round(Error_Test) - d)
+# Saida
+Y = np.tanh(W2.dot(O1b))      #tanh é a sigmoid       
+print(Y)
 
 

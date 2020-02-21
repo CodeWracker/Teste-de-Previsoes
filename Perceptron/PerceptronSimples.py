@@ -2,7 +2,7 @@
 import numpy as np
 
 # Define o numero de epocas e o numero de amostras (q)
-numEpocas = 70000
+numEpocas = 7000
 q = 6
 
 # Atributos
