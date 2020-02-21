@@ -1,32 +1,59 @@
 # -*- coding: utf-8 -*-
 
+import csv
+import numpy as np
 import numpy as np
 import matplotlib.pyplot as plt
 
-def funcaoAtivacao(valor):
-    if(valor>0):
-        return 1
-    else: 
-        return (-1)
-
 # Numero de epocas e de padrões (q)
-numEpocas = 100
-q = 13
-
+numEpocas = 10000
+q = 5
 # Taxa de Aprendizado
-eta = 0.01
-
-m = 2   # Numero de Neeuronios na camada de entrada
+eta = 0.0001
+m = 5   # Numero de Neeuronios na camada de entrada
 N = 1   # Numero de Neeuronios na camada escondida
 L = 1   # Numero de Neeuronios na camada de saida
 
-# Carrega os dados de treinamento
-peso = np.array([113, 122, 107,  98, 115, 120, 104, 108, 117, 101, 112, 106, 116])
-pH   = np.array([6.8, 4.7, 5.2, 3.6, 2.9, 4.2, 6.3, 4.0, 6.3, 4.2, 5.6, 3.1, 5.0])
+abertura = np.array([])
+fechamento = np.array([])
+maximo = np.array([])
+minimo = np.array([])
+volume = np.array([])
+with open('data.csv', 'r') as csvfile:
+    reader = csv.reader(csvfile)
+    for row in reader:
+        abertura = np.append(abertura,row[1])
+        fechamento = np.append(fechamento,row[2])
+        maximo = np.append(maximo,row[3])
+        minimo = np.append(minimo,row[4])
+        volume = np.append(volume,row[5])
+
+abertura = np.delete(abertura,0)
+
+fechamento = np.delete(fechamento,0)
+
+maximo = np.delete(maximo,0)
+
+minimo = np.delete(minimo,0)
+
+volume = np.delete(volume,0)
 
 # Vetor de classificação desejada
-d = np.array([-1,1,-1,1,1,1,-1,1,-1,1,-1,1,-1])
+dAb = abertura
+dFc = fechamento
+dMa = maximo
+dMi = minimo
+dVo = volume
 
+dAb = np.delete(dAb,(dAb.size-1)) 
+dFc = np.delete(dFc,(dFc.size-1)) 
+dMa = np.delete(dMa,(dMa.size-1)) 
+dMi = np.delete(dMi,(dMi.size-1)) 
+dVo = np.delete(dVo,(dVo.size-1)) 
+
+d = dMa
+print(d.shape)
+print(d)
 # Inicia aleatoriamente as matrizes de pesos
 W1 = np.random.random((N, m+1))
 W2 = np.random.random((N, N+1))
@@ -39,7 +66,7 @@ Etm = np.zeros(numEpocas)
 bias = 1
 
 # Entrada do Perceptron
-X = np.vstack((peso, pH))
+X = np.vstack((abertura,fechamento,maximo,minimo,volume))
 
 
 '''
@@ -50,11 +77,11 @@ X = np.vstack((peso, pH))
 
 for i in range(numEpocas):
     for j in range(q):
-
         # insere o bias no vetor de entrada
         Xb = np.hstack((bias, X[:,j]))
         
-        
+        Xb = map(float,Xb)
+
         # Saida da camada Escondida
         O1 = np.tanh(W1.dot(Xb))
 
@@ -63,8 +90,10 @@ for i in range(numEpocas):
 
         # Saida da rede neural
         Y = np.tanh(W2.dot(O1b))
-        e = d[j] - Y
-        print(Y)
+        print(d[j])
+        e = float(d[j]) - Y
+        e = np.asarray(e)
+
         # Erro total
         E[j] = (e.transpose().dot(e))/2
 
@@ -72,6 +101,9 @@ for i in range(numEpocas):
         #print('i = ' + str(i) + '   E = ' + str(E))
 
         # Backpropagation do erro e calculo do gradiente
+        print(e.size)
+        print(Y.size)
+        
         delta2 = np.diag(e).dot((1-Y*Y))
         vdelta2 = (W2.transpose()).dot(delta2)
         delta1 = np.diag(1 - O1b*O1b).dot(vdelta2)
@@ -86,33 +118,3 @@ for i in range(numEpocas):
 print("----------------")
 plt.plot(Etm)
 plt.show()
-
-'''
-=======================================
-            TESTE DA REDE
-=======================================
-'''
-
-# Carrega os dados de treinamento
-peso = input("peso ")
-pH   = input("ph ")
-
-# Vetor de classificação desejada.
-d = np.array([-1, -1, 1, 1, 1])
-Error_Test = np.zeros(5)
-
-
-# Insere o bias no vetor de entrada.
-Xb = [peso,pH,bias]
-
-# Saída da Camada Escondida.
-O1 = W1.dot(Xb)              
-
-# Incluindo o bias.
-O1b = np.insert(O1, 0, bias)
-
-# Saida
-Y = np.tanh(W2.dot(O1b))      #tanh é a sigmoid       
-print(Y)
-
-
