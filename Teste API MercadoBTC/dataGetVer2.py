@@ -95,7 +95,7 @@ d = np.delete(d,0,0)
 for i in range(numEpocas):
     for j in range(q):
         # insere o bias no vetor de entrada
-        Xb = np.hstack((bias, X))
+        Xb = np.hstack((bias, X[j,:]))
         print(Xb.size)
         print(W1.size)
         Xb = map(float,Xb)
