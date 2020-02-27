@@ -10,14 +10,14 @@ def funcaoAtivacao(valor):
         return (-1)
 
 # Numero de epocas e de padrões (q)
-numEpocas = 100
+numEpocas = 1000000
 q = 13
 
 # Taxa de Aprendizado
-eta = 0.01
+eta = 0.0000001
 
 m = 2   # Numero de Neeuronios na camada de entrada
-N = 1   # Numero de Neeuronios na camada escondida
+N = 2   # Numero de Neeuronios na camada escondida
 L = 1   # Numero de Neeuronios na camada de saida
 
 # Carrega os dados de treinamento

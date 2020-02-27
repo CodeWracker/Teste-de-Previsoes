@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+#fazer o simples
 import csv
 import numpy as np
 import numpy as np
