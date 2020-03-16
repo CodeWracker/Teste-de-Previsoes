@@ -2,7 +2,7 @@
 import numpy as np
 
 # Define o numero de epocas e o numero de amostras (q)
-numEpocas = 7000
+numEpocas = 10000000
 q = 6
 
 # Atributos
@@ -17,7 +17,7 @@ X = np.vstack((peso,pH))
 Y = np.array([-1,1,-1,-1,1,1])
 
 # Taxa de aprendizado
-eta = 0.1
+eta = 0.000000000001
 
 # Define o vetor de pesos
 W = np.zeros([1,3]) # Duas entradas + o bias

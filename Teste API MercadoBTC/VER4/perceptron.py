@@ -2,13 +2,11 @@
 
 import csv
 import numpy as np
-import numpy as np
 import matplotlib.pyplot as plt
-import APITest 
-import saveDataSet
+import getDataSet
 # Numero de epocas e de padrões (q)
 numEpocas = 100
-q = 15
+q = 10
 # Taxa de Aprendizado
 eta = 0.0001
 
@@ -18,19 +16,24 @@ fechamento = np.array([])
 maximo = np.array([])
 minimo = np.array([])
 volume = np.array([])
-dataG = np.array([])
 d = np.array([])
-XD = ['','','','','','','','','','','','','','','']
+Y = np.array([])
+XD = ['','','','','','','','','','']
 dG = np.array([])
 arq = "data"
-dataOrigem = input("Origem do dataSet - 1 para web 2 para local: ")
+
+with open('saidas.csv', 'r') as file:
+    leitor = csv.reader(file)
+    for row in leitor:
+        Y = np.append(Y,row[1])
+Y = np.delete(Y,0)
+print(Y)
+
 for cont in range(0,q):
     dia = 1 + cont
     print(dia)
     arq = 'data'+str(cont)
     print(arq)
-    if(dataOrigem == 1):
-        APITest.getDataWeb('2019-08-'+str(dia),arq)
     abertura = np.array([])
     fechamento = np.array([])
     maximo = np.array([])
@@ -39,14 +42,13 @@ for cont in range(0,q):
     with open(arq+'.csv', 'r') as csvfile:
         reader = csv.reader(csvfile)
         for row in reader:
-            abertura = np.append(abertura,row[1])
-            fechamento = np.append(fechamento,row[2])
-            maximo = np.append(maximo,row[3])
-            minimo = np.append(minimo,row[4])
-            volume = np.append(volume,row[5])
+            abertura = np.append(abertura,(row[1]))
+            fechamento = np.append(fechamento,(row[2]))
+            maximo = np.append(maximo,(row[3]))
+            minimo = np.append(minimo,(row[4]))
+            volume = np.append(volume,(row[5]))
 
     abertura = np.delete(abertura,0)
-    #print(abertura)
     fechamento = np.delete(fechamento,0)
 
     maximo = np.delete(maximo,0)
@@ -55,23 +57,14 @@ for cont in range(0,q):
 
     volume = np.delete(volume,0)
 
-    # Vetor de classificação desejada
     dAb = abertura
     dFc = fechamento
     dMa = maximo
     dMi = minimo
     dVo = volume
 
-    dAb = np.delete(dAb,(dAb.size-1)) 
-    dFc = np.delete(dFc,(dFc.size-1)) 
-    dMa = np.delete(dMa,(dMa.size-1)) 
-    dMi = np.delete(dMi,(dMi.size-1)) 
-    dVo = np.delete(dVo,(dVo.size-1)) 
-    '''
-    for a in dataG:
-        print(a)
-    '''
     XD[cont] = np.hstack((abertura,fechamento,maximo,minimo,volume))
+    #print(XD[cont])
     d = np.append(d,dAb)    
     print(d.shape)
     #print(d)
@@ -80,13 +73,16 @@ W = np.zeros([1,996])
 
 # Array para armazenar os erros
 e = np.zeros(q)
+print(e)
+print(Y)
 
 # Bias
 bias = 1
-for a in XD:
-    print(a.size)
-X = np.vstack((XD[0],XD[1],XD[2],XD[3],XD[4],XD[5],XD[6],XD[7],XD[8],XD[9],XD[10],XD[11],XD[12],XD[13],XD[14]))
+
+X = np.vstack((XD[0],XD[1],XD[2],XD[3],XD[4],XD[5],XD[6],XD[7],XD[8],XD[9]))
+
 d = np.delete(d,0,0)
+print(X[0])
 
 '''
 =======================================
@@ -99,17 +95,20 @@ for i in range(numEpocas):
         # insere o bias no vetor de entrada
         Xb = np.hstack((bias, X[j,:]))
         print(Xb)
-        #print(W1.size)
-        Xb = map(float,Xb)
+        print(Xb.size)
+        print(W.size)
 
         # Saida da camada Escondida
+        Xb = map(float,Xb)
         V = np.dot(W,Xb)
-        
+        Yr =  getDataSet.funcAtivacao(V)
         
         # Saida da rede neural
         #print(d[j])
-        e = float(d[j]) - V
-        e = np.asarray(e)
+        print(Y[j])
+        print(Yr)
+        e[j] = int(Y[j]) - Yr
+        print(e[j])
 
 
         # Imprime o erro da epoca e o erro total
@@ -119,9 +118,7 @@ for i in range(numEpocas):
         #print(e.size)
         #print(Y.size)
         print(str(100*i/numEpocas)+"%")
-        print(V)
-        
-
+        Xb = np.asarray(Xb)
         W = W + eta*e[j]*Xb
 
         
@@ -130,3 +127,35 @@ for i in range(numEpocas):
 print("----------------")
 plt.plot(e)
 plt.show()
+
+data=raw_input("selecione o dia")
+getDataSet.getInfos(data)
+abertura = np.array([])
+fechamento = np.array([])
+maximo = np.array([])
+minimo = np.array([])
+volume = np.array([])
+with open('data.csv', 'r') as csvfile:
+    reader = csv.reader(csvfile)
+    for row in reader:
+        abertura = np.append(abertura,(row[1]))
+        fechamento = np.append(fechamento,(row[2]))
+        maximo = np.append(maximo,(row[3]))
+        minimo = np.append(minimo,(row[4]))
+        volume = np.append(volume,(row[5]))
+
+abertura = np.delete(abertura,0)
+fechamento = np.delete(fechamento,0)
+
+maximo = np.delete(maximo,0)
+
+minimo = np.delete(minimo,0)
+
+volume = np.delete(volume,0)
+
+XD[cont] = np.hstack((abertura,fechamento,maximo,minimo,volume))
+Xb = np.hstack((bias, X[j,:]))
+Xb = map(float,Xb)
+V = np.dot(W,Xb)
+Yr =  getDataSet.funcAtivacao(V)
+print("----  Saida: "+str(Yr))
